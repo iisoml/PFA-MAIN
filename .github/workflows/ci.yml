@@ -1,0 +1,99 @@
+name: CI — Test, Build and Push to Docker Hub
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
+
+      - name: Run tests
+        run: pytest scripts/ -v --tb=short
+
+  
+  build-and-push:
+    runs-on: ubuntu-latest
+    needs: test          
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Compute short SHA
+        id: vars
+        run: echo "short_sha=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to Docker Hub
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./dockerfile
+          push: ${{ github.event_name == 'push' }}
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/lab-tat-api:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/lab-tat-api:${{ steps.vars.outputs.short_sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Smoke test — /health endpoint
+        if: github.event_name == 'push'
+        run: |
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/lab-tat-api:${{ steps.vars.outputs.short_sha }}
+          docker run -d --name smoke -p 8000:8000 \
+            ${{ secrets.DOCKERHUB_USERNAME }}/lab-tat-api:${{ steps.vars.outputs.short_sha }}
+          # Wait up to 60s for the app to be ready (TF cold-start)
+          for i in $(seq 1 12); do
+            sleep 5
+            curl -sf http://localhost:8000/health && echo "Health check passed" && break
+            echo "Attempt $i/12 — retrying..."
+            if [ "$i" -eq 12 ]; then
+              docker logs smoke
+              echo "Health check failed after 60s"
+              exit 1
+            fi
+          done
+          docker rm -f smoke
+
+      - name: Image digest summary
+        if: github.event_name == 'push'
+        run: |
+          echo "Docker image built and pushed:"
+          echo "  ${{ secrets.DOCKERHUB_USERNAME }}/lab-tat-api:latest"
+          echo "  ${{ secrets.DOCKERHUB_USERNAME }}/lab-tat-api:${{ steps.vars.outputs.short_sha }}"
+          echo "  Digest: ${{ steps.build.outputs.digest }}"

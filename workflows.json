@@ -1,0 +1,17 @@
+﻿{
+  "total_count": 1,
+  "workflows": [
+    {
+      "id": 295959825,
+      "node_id": "W_kwDOSluxBs4Ro_0R",
+      "name": "Build and Push to Docker Hub",
+      "path": ".github/workflows/ci.yml",
+      "state": "active",
+      "created_at": "2026-06-14T22:35:22.000Z",
+      "updated_at": "2026-06-14T22:35:22.000Z",
+      "url": "https://api.github.com/repos/iisoml/PFA/actions/workflows/295959825",
+      "html_url": "https://github.com/iisoml/PFA/blob/main/.github/workflows/ci.yml",
+      "badge_url": "https://github.com/iisoml/PFA/workflows/Build%20and%20Push%20to%20Docker%20Hub/badge.svg"
+    }
+  ]
+}

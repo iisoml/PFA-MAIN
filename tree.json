@@ -1,0 +1,98 @@
+﻿{
+  "sha": "5b49890856b3bcd975b45f96f2d951bfb33bbef4",
+  "url": "https://api.github.com/repos/iisoml/PFA/git/trees/5b49890856b3bcd975b45f96f2d951bfb33bbef4",
+  "tree": [
+    {
+      "path": "lab_pred.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9de54e86888f325a4235ae6bb3113a8defd8af59",
+      "size": 47912177,
+      "url": "https://api.github.com/repos/iisoml/PFA/git/blobs/9de54e86888f325a4235ae6bb3113a8defd8af59"
+    },
+    {
+      "path": "notebooks",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "e03ce8d20d0de94796cb7c7d2d3400216c6b1727",
+      "url": "https://api.github.com/repos/iisoml/PFA/git/trees/e03ce8d20d0de94796cb7c7d2d3400216c6b1727"
+    },
+    {
+      "path": "notebooks/Model_regression_updated.ipynb",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "358541741a1d2e5f6b003921593313ab4b633990",
+      "size": 876307,
+      "url": "https://api.github.com/repos/iisoml/PFA/git/blobs/358541741a1d2e5f6b003921593313ab4b633990"
+    },
+    {
+      "path": "src",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "84f6d802740d4b582e9e5ced62807ac75b979251",
+      "url": "https://api.github.com/repos/iisoml/PFA/git/trees/84f6d802740d4b582e9e5ced62807ac75b979251"
+    },
+    {
+      "path": "src/data",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "6e704835b78cc5b5ebc2672bebbae4dbdf79b94d",
+      "url": "https://api.github.com/repos/iisoml/PFA/git/trees/6e704835b78cc5b5ebc2672bebbae4dbdf79b94d"
+    },
+    {
+      "path": "src/data/load_data.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "860b3fc93f4617fed9434a6b623116c708578170",
+      "size": 525,
+      "url": "https://api.github.com/repos/iisoml/PFA/git/blobs/860b3fc93f4617fed9434a6b623116c708578170"
+    },
+    {
+      "path": "src/data/preprocess.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cf032ae6903981d113e909deed082a3f7b6bac94",
+      "size": 1540,
+      "url": "https://api.github.com/repos/iisoml/PFA/git/blobs/cf032ae6903981d113e909deed082a3f7b6bac94"
+    },
+    {
+      "path": "src/features",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "54530af4b0c81d62727bde908e4b4a3256f07ade",
+      "url": "https://api.github.com/repos/iisoml/PFA/git/trees/54530af4b0c81d62727bde908e4b4a3256f07ade"
+    },
+    {
+      "path": "src/features/build_features.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7e8b7e771b87b9235a98cd5e22ac2e87d6781352",
+      "size": 4247,
+      "url": "https://api.github.com/repos/iisoml/PFA/git/blobs/7e8b7e771b87b9235a98cd5e22ac2e87d6781352"
+    },
+    {
+      "path": "src/models",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "211e588058cf01182ce4a1388db6869dab348913",
+      "url": "https://api.github.com/repos/iisoml/PFA/git/trees/211e588058cf01182ce4a1388db6869dab348913"
+    },
+    {
+      "path": "src/models/evaluate.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e8818568f699cf8157f385558e83ea7f973c4e98",
+      "size": 449,
+      "url": "https://api.github.com/repos/iisoml/PFA/git/blobs/e8818568f699cf8157f385558e83ea7f973c4e98"
+    },
+    {
+      "path": "src/models/train.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "99a3b97db359085616e29270ffc6468ae3251952",
+      "size": 1758,
+      "url": "https://api.github.com/repos/iisoml/PFA/git/blobs/99a3b97db359085616e29270ffc6468ae3251952"
+    }
+  ],
+  "truncated": false
+}
