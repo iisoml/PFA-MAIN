@@ -17,11 +17,16 @@ MLP_PATH       = PROJECT_ROOT / "mlp_classification.h5"
 XGB_PATH       = PROJECT_ROOT / "artifacts" / "model.pkl"
 ARTIFACTS_PATH = PROJECT_ROOT / "artifacts" / "preprocessing.pkl"
 
-# These are only used for raw input cleaning — NOT for building the XGBoost
-# feature vector (that comes from the saved feature_columns in the artifact).
-_RAW_CAT_FEATURES = ["labname", "gender", "unittype", "recent_diagnosis"]
-_RAW_NUM_FEATURES = ["age", "admissionweight", "lab_workload_last_hour",
-                     "result_hour", "result_weekday"]
+# Public constants — referenced by tests for mocking.
+# NUM_FEATURES is the numeric feature set the XGBoost scaler was fitted on (5 cols).
+# CAT_FEATURES are the raw categorical columns before one-hot encoding.
+NUM_FEATURES = ["age", "admissionweight", "lab_workload_last_hour",
+                "result_hour", "result_weekday"]
+CAT_FEATURES = ["labname", "gender", "unittype", "recent_diagnosis"]
+
+# Private aliases used internally
+_RAW_CAT_FEATURES = CAT_FEATURES
+_RAW_NUM_FEATURES = NUM_FEATURES
 
 _MLP   = None
 _XGB   = None
