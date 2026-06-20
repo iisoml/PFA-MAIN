@@ -5,7 +5,7 @@
 # → numpy is pinned to 1.26.4 (latest 1.x, satisfies all packages)
 
 # --- Web framework ---
-fastapi==0.115.0
+fastapi==0.115.2
 uvicorn==0.30.5
 starlette==0.38.6
 pydantic==2.8.2
