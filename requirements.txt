@@ -7,7 +7,7 @@
 # --- Web framework ---
 fastapi==0.115.2
 uvicorn==0.30.5
-starlette==0.38.6
+starlette==0.40.0
 pydantic==2.8.2
 pydantic_core==2.20.1
 
