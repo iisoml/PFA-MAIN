@@ -12,7 +12,7 @@ pydantic==2.8.2
 pydantic_core==2.20.1
 
 # --- UI ---
-gradio==4.44.0
+gradio==5.9.1
 
 # --- ML / inference ---
 # numpy MUST stay <2.0.0 — tensorflow 2.17.0 has a hard upper bound
