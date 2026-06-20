@@ -36,9 +36,9 @@ except ImportError:
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # Local modules
-from load_data import load_data
-from preprocess import preprocess_data
-from build_features import build_features
+from src.data.load_data import load_data
+from src.data.preprocess import preprocess_data
+from src.features.build_features import build_features
 
 def validate_lab_data(df):
     """
