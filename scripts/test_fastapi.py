@@ -1,8 +1,7 @@
 """
 Unit tests for src/serving/inference.py
 
-All model files (mlp_classification.h5, xgb_regression.json, preprocessing.pkl)
-are mocked — no training run required in CI.
+All model files are mocked — no training run required in CI.
 """
 import sys
 import os
@@ -13,10 +12,10 @@ import pytest
 import numpy as np
 import pandas as pd
 from unittest.mock import MagicMock, patch
-from scipy.sparse import csr_matrix
 
 import serving.inference as inference_module
 from serving.inference import predict
+
 
 # ---------------------------------------------------------------------------
 # Fake model objects
@@ -36,44 +35,38 @@ def _make_fake_xgb():
     return xgb
 
 
-def _make_fake_preprocessing():
-    """Return (onehot, scaler, label_encoder, medians, mlp_scaler, mlp_encoder, mlp_medians, artifact)."""
-    n_cat_cols = 10
+def _make_fake_artifact():
+    """Return a fake _ARTIFACT dict matching inference.py's expected structure."""
+    mlp_feats = ["age", "admissionweight", "lab_workload_last_hour", "result_hour", "result_weekday"]
 
-    onehot = MagicMock()
-    onehot.transform.return_value = csr_matrix(np.zeros((1, n_cat_cols)))
+    # Build a feature_columns list that covers num_features + a few OHE columns
+    num_features = inference_module.NUM_FEATURES
+    feature_columns = list(num_features) + [
+        "labname_potassium", "gender_female", "unittype_med-surg icu", "recent_diagnosis_cardiovascular|hypertension"
+    ]
 
     scaler = MagicMock()
-    scaler.transform.return_value = np.zeros((1, len(inference_module.NUM_FEATURES)))
-
-    label_encoder = MagicMock()
-    label_encoder.inverse_transform.return_value = ["apres_midi"]
-
-    medians = pd.Series(
-        {col: 0.0 for col in inference_module.NUM_FEATURES}
-    )
+    scaler.transform.return_value = np.zeros((1, len(num_features)))
 
     mlp_scaler = MagicMock()
-    mlp_scaler.transform.return_value = np.zeros((1, 5))
+    mlp_scaler.transform.return_value = np.zeros((1, len(mlp_feats)))
 
     mlp_encoder = MagicMock()
     mlp_encoder.inverse_transform.return_value = ["apres_midi"]
 
-    mlp_medians = pd.Series({col: 0.0 for col in ["age", "admissionweight",
-                              "lab_workload_last_hour", "result_hour", "result_weekday"]})
+    medians = pd.Series({col: 0.0 for col in num_features})
+    mlp_medians = pd.Series({col: 0.0 for col in mlp_feats})
 
-    artifact = {
-        "onehot":          onehot,
-        "scaler":          scaler,
-        "label_encoder":   label_encoder,
-        "medians":         medians,
-        "mlp_features":    ["age", "admissionweight", "lab_workload_last_hour",
-                            "result_hour", "result_weekday"],
-        "mlp_scaler":      mlp_scaler,
-        "mlp_label_encoder": mlp_encoder,
-        "mlp_medians":     mlp_medians,
+    return {
+        "feature_columns":    feature_columns,
+        "num_features":       num_features,
+        "scaler":             scaler,
+        "medians":            medians,
+        "mlp_features":       mlp_feats,
+        "mlp_scaler":         mlp_scaler,
+        "mlp_label_encoder":  mlp_encoder,
+        "mlp_medians":        mlp_medians,
     }
-    return onehot, scaler, label_encoder, medians, mlp_scaler, mlp_encoder, mlp_medians, artifact
 
 
 # ---------------------------------------------------------------------------
@@ -82,22 +75,13 @@ def _make_fake_preprocessing():
 
 @pytest.fixture(autouse=True)
 def mock_models():
-    """Patch module-level globals so load_models() returns immediately."""
-    onehot, scaler, label_encoder, medians, mlp_scaler, mlp_encoder, mlp_medians, artifact = (
-        _make_fake_preprocessing()
-    )
+    """Patch module-level globals so load_models() is bypassed."""
+    artifact = _make_fake_artifact()
 
     with patch.multiple(
         "serving.inference",
         _MLP=_make_fake_mlp(),
         _XGB=_make_fake_xgb(),
-        _ONEHOT=onehot,
-        _SCALER=scaler,
-        _ENCODER=label_encoder,
-        _MEDIANS=medians,
-        _MLP_SCALER=mlp_scaler,
-        _MLP_ENCODER=mlp_encoder,
-        _MLP_MEDIANS=mlp_medians,
         _ARTIFACT=artifact,
     ):
         yield
@@ -175,6 +159,5 @@ def test_predict_without_optional_recent_diagnosis():
 
 def test_predict_empty_payload_returns_error_not_exception():
     result = predict({})
-    # Must return a dict with status key — never raise
     assert isinstance(result, dict)
     assert "status" in result
