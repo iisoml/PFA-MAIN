@@ -20,3 +20,12 @@ data/processed/
 # BUT keep our bundled serving model in the repo
 !src/serving/model/
 !src/serving/model/**
+
+actions_runs.json
+commit.json
+repo.json
+repo_root.json
+runs.json
+tree.json
+workflow_file.json
+workflows.json

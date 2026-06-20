@@ -19,7 +19,7 @@ def load_data(file_path: str) -> pd.DataFrame:
         raise ValueError(f"Expected a .csv file, got: {file_path}")
     
     try:
-        data = pd.read_csv(file_path)
+        data = pd.read_csv(file_path, low_memory=False)
     except Exception as e:
         raise Exception(f"An error occurred while loading the data: {e}")
     

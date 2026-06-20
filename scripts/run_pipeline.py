@@ -138,34 +138,26 @@ def main(args):
         # These constants must match inference.py exactly.
         XGB_NUM_FEATURES = [
             "age", "admissionweight", "lab_workload_last_hour",
-            "result_hour", "result_weekday", "result_year", "result_month", "result_day",
+            "result_hour", "result_weekday",
         ]
-        XGB_CAT_FEATURES = ["labname", "gender", "unittype", "recent_diagnosis"]
-        PERIOD_LABELS    = ["apres_midi", "matin", "nuit", "soir"]
+        PERIOD_LABELS = ["apres_midi", "matin", "nuit", "soir"]
 
         medians = df_enc[XGB_NUM_FEATURES].median()
 
         xgb_scaler = StandardScaler()
         xgb_scaler.fit(df_enc[XGB_NUM_FEATURES].fillna(medians).values)
 
-        try:
-            xgb_onehot = OneHotEncoder(handle_unknown="ignore", sparse_output=True)
-        except TypeError:                          # scikit-learn < 1.2
-            xgb_onehot = OneHotEncoder(handle_unknown="ignore", sparse=True)
-        xgb_onehot.fit(df_enc[XGB_CAT_FEATURES].fillna("unknown").astype(str))
-
         label_encoder = LabelEncoder()
         label_encoder.fit(PERIOD_LABELS)
 
         preprocessing_artifact = {
-            # XGBoost serving
             "feature_columns": feature_cols,
             "target":          target,
             "num_features":    XGB_NUM_FEATURES,
-            "cat_features":    XGB_CAT_FEATURES,
+            "cat_features":    [],          # already encoded by build_features
             "period_labels":   PERIOD_LABELS,
             "scaler":          xgb_scaler,
-            "onehot":          xgb_onehot,
+            "onehot":          None,        # not needed; build_features handles encoding
             "label_encoder":   label_encoder,
             "medians":         medians,
         }

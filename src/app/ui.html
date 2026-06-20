@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prédicteur de délais de laboratoire</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f4;
+      color: #1c1c1c;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    .header {
+      margin-bottom: 1.75rem;
+    }
+
+    .header h1 {
+      font-size: 22px;
+      font-weight: 600;
+      color: #1c1c1c;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header h1 svg {
+      width: 22px;
+      height: 22px;
+      stroke: #1c1c1c;
+    }
+
+    .header p {
+      font-size: 14px;
+      color: #6b6b6b;
+      margin-top: 5px;
+    }
+
+    .card {
+      background: #ffffff;
+      border: 1px solid #e5e5e3;
+      border-radius: 14px;
+      padding: 1.5rem;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #9a9a9a;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 0.85rem;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .field label {
+      font-size: 13px;
+      color: #4a4a4a;
+      font-weight: 500;
+    }
+
+    .field select,
+    .field input[type="number"] {
+      font-size: 14px;
+      color: #1c1c1c;
+      background: #fafaf9;
+      border: 1px solid #e5e5e3;
+      border-radius: 8px;
+      padding: 8px 10px;
+      width: 100%;
+      transition: border-color 0.15s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .field select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b6b6b' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 30px;
+    }
+
+    .field select:focus,
+    .field input[type="number"]:focus {
+      outline: none;
+      border-color: #a0a0a0;
+      background: #fff;
+    }
+
+    .divider {
+      height: 1px;
+      background: #f0f0ee;
+      margin: 1.25rem 0;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 11px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 10px;
+      border: 1px solid #d0d0ce;
+      background: #1c1c1c;
+      color: #ffffff;
+      cursor: pointer;
+      margin-top: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.15s;
+    }
+
+    .submit-btn:hover { background: #333; }
+    .submit-btn:active { transform: scale(0.99); }
+    .submit-btn:disabled { background: #888; cursor: not-allowed; }
+
+    .spinner {
+      width: 15px;
+      height: 15px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .result {
+      margin-top: 1.25rem;
+      border: 1px solid #e5e5e3;
+      border-radius: 14px;
+      background: #fafaf9;
+      padding: 1.25rem;
+      display: none;
+    }
+
+    .result.visible { display: block; }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-top: 0.75rem;
+    }
+
+    .metric {
+      background: #ffffff;
+      border: 1px solid #eeeeed;
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+    }
+
+    .metric .m-label {
+      font-size: 12px;
+      color: #9a9a9a;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .metric .m-label svg {
+      width: 13px;
+      height: 13px;
+      stroke: #9a9a9a;
+    }
+
+    .metric .m-value {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1c1c1c;
+    }
+
+    .metric .m-unit {
+      font-size: 12px;
+      color: #b0b0b0;
+      margin-top: 2px;
+    }
+
+    .metric.wide .m-value {
+      font-size: 15px;
+    }
+
+    .error-box {
+      margin-top: 1rem;
+      background: #fff5f5;
+      border: 1px solid #fcc;
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      color: #c0392b;
+      font-size: 13px;
+      display: none;
+    }
+
+    .error-box.visible { display: block; }
+
+    @media (max-width: 600px) {
+      .grid-2, .grid-3, .result-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 420px) {
+      .grid-2, .grid-3, .result-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <div class="header">
+      <h1>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 3v7.5l-3 3.75A4.5 4.5 0 0 0 9.75 21h4.5a4.5 4.5 0 0 0 3.75-6.75L15 10.5V3"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 3h6"/>
+        </svg>
+        Prédicteur de délais de laboratoire
+      </h1>
+      <p>Estimation du délai de validation d'un résultat biologique</p>
+    </div>
+
+    <div class="card">
+
+      <!-- PATIENT -->
+      <div class="section-label">Patient</div>
+      <div class="grid-3">
+        <div class="field">
+          <label for="gender">Sexe</label>
+          <select id="gender">
+            <option>Female</option>
+            <option>Male</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="age">Âge</label>
+          <input type="number" id="age" value="78" min="0" max="120">
+        </div>
+        <div class="field">
+          <label for="admissionweight">Poids (kg)</label>
+          <input type="number" id="admissionweight" value="65.5" step="0.1">
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- CONTEXTE CLINIQUE -->
+      <div class="section-label">Contexte clinique</div>
+      <div class="grid-2">
+        <div class="field">
+          <label for="unittype">Unité hospitalière</label>
+          <select id="unittype">
+            <option>Med-Surg ICU</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="recent_diagnosis">Diagnostic récent</label>
+          <select id="recent_diagnosis">
+            <option value="None">Aucun</option>
+            <option>pulmonary|respiratory failure|acute respiratory distress</option>
+            <option>endocrine|glucose metabolism|diabetes mellitus</option>
+            <option>gastrointestinal|post-GI surgery|s/p surgery for intestinal obstruction</option>
+            <option>cardiovascular|ventricular disorders|hypertension</option>
+            <option>cardiovascular|chest pain / ASHD|coronary artery disease</option>
+            <option>renal|disorder of kidney|chronic kidney disease|Stage 3 (GFR 30-59)</option>
+            <option>pulmonary|disorders of the airways|COPD</option>
+            <option>pulmonary|disorders of vasculature|pulmonary embolism</option>
+            <option>toxicology|drug overdose|tricyclic overdose</option>
+            <option>pulmonary|respiratory failure|acute respiratory failure</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- ANALYSE -->
+      <div class="section-label">Analyse prescrite</div>
+      <div class="field">
+        <label for="labname">Nom du test</label>
+        <select id="labname">
+          <option>potassium</option><option>alkaline phos.</option><option>Hgb</option>
+          <option>calcium</option><option>bicarbonate</option><option>Hct</option>
+          <option>creatinine</option><option>-eos</option><option>-monos</option>
+          <option>-basos</option><option>MCH</option><option>MCHC</option>
+          <option>-lymphs</option><option>magnesium</option><option>total bilirubin</option>
+          <option>TSH</option><option>anion gap</option><option>albumin</option>
+          <option>WBC x 1000</option><option>ALT (SGPT)</option><option>RDW</option>
+          <option>AST (SGOT)</option><option>RBC</option><option>sodium</option>
+          <option>MCV</option><option>chloride</option><option>total protein</option>
+          <option>-polys</option><option>glucose</option><option>platelets x 1000</option>
+          <option>BUN</option><option>troponin - I</option><option>lactate</option>
+          <option>PT</option><option>PT - INR</option><option>PTT</option>
+          <option>BNP</option><option>bedside glucose</option><option>Fe/TIBC Ratio</option>
+          <option>TIBC</option><option>Fe</option><option>Ferritin</option>
+          <option>reticulocyte count</option><option>folate</option><option>Vitamin B12</option>
+          <option>Vancomycin - trough</option><option>Digoxin</option><option>free T4</option>
+          <option>HCO3</option><option>paCO2</option><option>pH</option>
+          <option>FiO2</option><option>Base Deficit</option><option>paO2</option>
+          <option>LPM O2</option><option>Base Excess</option><option>total cholesterol</option>
+          <option>LDL</option><option>HDL</option><option>triglycerides</option>
+          <option>CRP</option><option>urinary osmolality</option><option>urinary specific gravity</option>
+          <option>urinary sodium</option><option>urinary creatinine</option><option>uric acid</option>
+          <option>serum osmolality</option><option>ethanol</option><option>salicylate</option>
+          <option>Acetaminophen</option><option>phosphate</option><option>ionized calcium</option>
+          <option>direct bilirubin</option><option>amylase</option><option>lipase</option>
+          <option>CPK</option><option>CPK-MB</option><option>fibrinogen</option><option>-bands</option>
+        </select>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- DATE & HEURE -->
+      <div class="section-label">Date et heure de la demande</div>
+      <div class="grid-3">
+        <div class="field">
+          <label for="result_year">Année</label>
+          <input type="number" id="result_year" value="2026">
+        </div>
+        <div class="field">
+          <label for="result_month">Mois</label>
+          <input type="number" id="result_month" value="1" min="1" max="12">
+        </div>
+        <div class="field">
+          <label for="result_day">Jour</label>
+          <input type="number" id="result_day" value="1" min="1" max="31">
+        </div>
+        <div class="field">
+          <label for="result_hour">Heure</label>
+          <input type="number" id="result_hour" value="8" min="0" max="23">
+        </div>
+        <div class="field">
+          <label for="result_weekday">Jour de la semaine</label>
+          <select id="result_weekday">
+            <option value="0">Lundi</option>
+            <option value="1">Mardi</option>
+            <option value="2">Mercredi</option>
+            <option value="3">Jeudi</option>
+            <option value="4">Vendredi</option>
+            <option value="5">Samedi</option>
+            <option value="6">Dimanche</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="lab_workload_last_hour">Charge labo (dernière heure)</label>
+          <input type="number" id="lab_workload_last_hour" value="25" min="0">
+        </div>
+      </div>
+
+      <button class="submit-btn" id="submitBtn" onclick="runPredict()">
+        <div class="spinner" id="spinner"></div>
+        <svg id="btnIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        <span id="btnText">Estimer le délai</span>
+      </button>
+    </div>
+
+    <!-- ERROR -->
+    <div class="error-box" id="errorBox"></div>
+
+    <!-- RESULT -->
+    <div class="result" id="resultBox">
+      <div class="section-label">Résultat estimé</div>
+      <div class="result-grid">
+        <div class="metric">
+          <div class="m-label">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Délai prédit
+          </div>
+          <div class="m-value" id="r-mins">—</div>
+          <div class="m-unit">minutes</div>
+        </div>
+        <div class="metric">
+          <div class="m-label">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            Période
+          </div>
+          <div class="m-value" id="r-period">—</div>
+          <div class="m-unit">de la journée</div>
+        </div>
+        <div class="metric wide">
+          <div class="m-label">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="9 16 11 18 15 14"/></svg>
+            Validation estimée
+          </div>
+          <div class="m-value" id="r-datetime">—</div>
+          <div class="m-unit">date / heure</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    async function runPredict() {
+      const btn = document.getElementById('submitBtn');
+      const spinner = document.getElementById('spinner');
+      const btnIcon = document.getElementById('btnIcon');
+      const btnText = document.getElementById('btnText');
+      const errorBox = document.getElementById('errorBox');
+      const resultBox = document.getElementById('resultBox');
+
+      spinner.style.display = 'block';
+      btnIcon.style.display = 'none';
+      btnText.textContent = 'Calcul en cours…';
+      btn.disabled = true;
+      errorBox.classList.remove('visible');
+      resultBox.classList.remove('visible');
+
+      const payload = {
+        labname: document.getElementById('labname').value,
+        gender: document.getElementById('gender').value,
+        age: String(document.getElementById('age').value),
+        unittype: document.getElementById('unittype').value,
+        recent_diagnosis: document.getElementById('recent_diagnosis').value === 'None'
+          ? null
+          : document.getElementById('recent_diagnosis').value,
+        result_year: parseInt(document.getElementById('result_year').value),
+        result_month: parseInt(document.getElementById('result_month').value),
+        result_day: parseInt(document.getElementById('result_day').value),
+        result_hour: parseInt(document.getElementById('result_hour').value),
+        result_weekday: parseInt(document.getElementById('result_weekday').value),
+        admissionweight: parseFloat(document.getElementById('admissionweight').value) || null,
+        lab_workload_last_hour: parseInt(document.getElementById('lab_workload_last_hour').value),
+      };
+
+      try {
+        const res = await fetch('/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (data.status === 'success') {
+          document.getElementById('r-mins').textContent = data.predicted_turnaround_time_mins;
+          document.getElementById('r-period').textContent = data.predicted_period;
+          document.getElementById('r-datetime').textContent = data.predicted_validation_datetime;
+          resultBox.classList.add('visible');
+        } else {
+          errorBox.textContent = 'Erreur : ' + (data.message || 'Réponse invalide du serveur.');
+          errorBox.classList.add('visible');
+        }
+      } catch (e) {
+        errorBox.textContent = 'Impossible de joindre le serveur. Vérifiez que le backend FastAPI est actif.';
+        errorBox.classList.add('visible');
+      }
+
+      spinner.style.display = 'none';
+      btnIcon.style.display = 'inline';
+      btnText.textContent = 'Estimer le délai';
+      btn.disabled = false;
+    }
+  </script>
+</body>
+</html>
