@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/vlogl/OneDrive/Desktop/PFA Update/PFA-main/PFA-main/scripts/mlruns/799185406774418750/fa1597e2db4243e5b9bac8cdd86ba68f/artifacts
+end_time: 1781993657374
+entry_point_name: ''
+experiment_id: '799185406774418750'
+lifecycle_stage: active
+run_id: fa1597e2db4243e5b9bac8cdd86ba68f
+run_name: brawny-pig-148
+run_uuid: fa1597e2db4243e5b9bac8cdd86ba68f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1781993063573
+status: 4
+tags: []
+user_id: vlogl

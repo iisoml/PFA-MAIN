@@ -1,0 +1,20 @@
+labname_vitamin b12                                                        0.143731
+labname_ferritin                                                           0.099975
+labname_folate                                                             0.095125
+recent_diagnosis_gastrointestinal|pancreatic disease|pancreatitis|acute    0.085916
+labname_fe                                                                 0.068319
+labname_cortisol                                                           0.065809
+labname_tsh                                                                0.050185
+unittype_micu                                                              0.041343
+labname_bedside glucose                                                    0.025980
+unittype_csicu                                                             0.025039
+gender_female                                                              0.023255
+time_category_matin                                                        0.020863
+admissionweight                                                            0.020305
+time_category_soir                                                         0.020222
+recent_diagnosis_unknown                                                   0.019530
+gender_male                                                                0.019127
+age                                                                        0.017988
+result_weekday                                                             0.017370
+result_hour                                                                0.016121
+lab_workload_last_hour                                                     0.015574
