@@ -15,8 +15,10 @@ RUN pip install --upgrade pip \
 
 COPY . .
 
-RUN mkdir -p /app/artifacts /app/data/processed
-
+# Explicitly copy artifacts (overrides .dockerignore exclusion)
+COPY artifacts/preprocessing.pkl /app/artifacts/preprocessing.pkl
+COPY artifacts/model.pkl /app/artifacts/model.pkl
+COPY mlp_classification.h5 /app/mlp_classification.h5
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONPATH=/app:/app/src \
@@ -26,6 +28,5 @@ EXPOSE 8000
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
-
 
 CMD ["uvicorn", "app.app:app", "--host", "0.0.0.0", "--port", "8000"]
