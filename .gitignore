@@ -21,11 +21,10 @@ data/processed/
 !src/serving/model/
 !src/serving/model/**
 
+# Keep trained artifacts for Docker image
+!artifacts/preprocessing.pkl
+!artifacts/model.pkl
+!mlp_classification.h5
+
 actions_runs.json
-commit.json
-repo.json
-repo_root.json
-runs.json
-tree.json
-workflow_file.json
-workflows.json
+...
