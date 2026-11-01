@@ -1,52 +1,111 @@
-# 🏥 Prédiction des délais médicaux
+# 🏥 Medical Waiting Time Prediction
+
+### Machine Learning | Healthcare | Data Science
 
 ## 📌 Présentation du projet
 
-Ce projet consiste à développer une solution de **Data Science et de Machine Learning permettant de prédire les délais d'attente dans le domaine médical**.
+Ce projet vise à développer une solution intelligente basée sur le **Machine Learning pour analyser et prédire les délais médicaux**.
 
-L'objectif est d'exploiter les données médicales et organisationnelles afin d'estimer le temps d'attente avant une consultation ou la prise en charge d'un patient. Cette approche vise à aider les établissements de santé à mieux anticiper la demande, optimiser la gestion des rendez-vous et améliorer l'expérience des patients.
+L'objectif est d'exploiter les données disponibles afin d'estimer les délais, d'identifier les facteurs qui influencent l'attente et de fournir des informations utiles à l'amélioration de la gestion des services de santé.
+
+La solution s'appuie sur plusieurs modèles de Machine Learning et une architecture permettant de servir les prédictions à travers une API et une interface utilisateur.
 
 ## 🎯 Objectifs
 
-- Analyser les données liées aux consultations et aux délais médicaux.
-- Identifier les facteurs qui influencent les temps d'attente.
-- Préparer et nettoyer les données pour l'entraînement des modèles.
-- Développer des modèles de Machine Learning pour prédire les délais.
-- Évaluer et comparer les performances des modèles.
-- Exploiter les résultats pour faciliter la prise de décision.
+- Analyser et exploiter les données liées aux délais médicaux.
+- Identifier les variables ayant un impact sur les délais.
+- Préparer les données pour l'entraînement des modèles.
+- Développer et comparer des modèles prédictifs.
+- Mettre les modèles à disposition via une API.
+- Faciliter l'accès aux prédictions grâce à une interface utilisateur.
 
-## ⚙️ Méthodologie
+## 🧠 Approche Machine Learning
 
-1. **Collecte des données** : récupération et exploration du jeu de données.
-2. **Prétraitement** : nettoyage, traitement des valeurs manquantes et encodage des variables.
-3. **Analyse exploratoire (EDA)** : identification des tendances et des relations entre les variables.
-4. **Feature Engineering** : création et sélection des variables pertinentes.
-5. **Modélisation** : entraînement de modèles de Machine Learning.
-6. **Évaluation** : comparaison des performances à l'aide de métriques adaptées.
-7. **Prédiction** : estimation des délais médicaux à partir de nouvelles données.
+Le projet intègre notamment deux approches :
+
+- **XGBoost Regression :** modèle de régression pour l'estimation de valeurs numériques.
+- **Multi-Layer Perceptron (MLP) :** réseau de neurones utilisé pour une tâche de classification.
+
+Les modèles entraînés sont sauvegardés sous forme d'artefacts afin de permettre leur utilisation lors de l'inférence.
+
+## ⚙️ Architecture du projet
+
+Le dépôt est organisé autour de plusieurs composants :
+
+```text
+PFA-MAIN/
+│
+├── src/                  # Code source
+├── scripts/              # Scripts de traitement
+├── notebooks/            # Expérimentations et analyses
+├── data/
+│   └── processed/        # Données prétraitées
+├── artifacts/            # Artefacts des modèles
+│
+├── mlp_classification.h5
+├── xgb_regression.json
+├── requirements.txt
+├── dockerfile
+└── README.md
+```
 
 ## 🛠️ Technologies utilisées
 
-- Python
-- Pandas & NumPy
-- Matplotlib & Seaborn
-- Scikit-learn
-- Jupyter Notebook
+| Domaine | Technologies |
+|---|---|
+| Langage | Python |
+| Data Processing | Pandas, NumPy |
+| Machine Learning | Scikit-learn, XGBoost |
+| Deep Learning | TensorFlow |
+| API Backend | FastAPI, Uvicorn |
+| Interface | Gradio |
+| Experiment Tracking | MLflow |
+| Conteneurisation | Docker |
 
-## 📊 Résultats attendus
+## 🚀 Installation
 
-- Estimation des délais médicaux.
-- Identification des principaux facteurs influençant l'attente.
-- Aide à l'optimisation de la planification des consultations.
-- Amélioration de la gestion des ressources médicales.
+### 1. Cloner le dépôt
+
+```bash
+git clone https://github.com/iisoml/PFA-MAIN.git
+cd PFA-MAIN
+```
+
+### 2. Créer un environnement virtuel
+
+```bash
+python -m venv venv
+```
+
+### 3. Activer l'environnement
+
+Windows :
+
+```bash
+venv\Scripts\activate
+```
+
+Linux / macOS :
+
+```bash
+source venv/bin/activate
+```
+
+### 4. Installer les dépendances
+
+```bash
+pip install -r requirements.txt
+```
+
+## 📊 Perspectives
+
+- Améliorer les performances et la robustesse des modèles.
+- Approfondir l'analyse des facteurs influençant les délais.
+- Enrichir les fonctionnalités de l'interface utilisateur.
+- Améliorer le déploiement et le suivi des modèles.
 
 ## 👥 Collaboration
 
-Projet réalisé en collaboration avec des étudiants, dans le cadre d'un travail autour de la Data Science et du Machine Learning.
+Projet réalisé en équipe dans le cadre d'un projet de Data Science appliquée au domaine médical.
 
-## 🚀 Perspectives
-
-- Tester des modèles plus avancés.
-- Développer un tableau de bord interactif.
-- Intégrer une interface permettant de réaliser des prédictions.
-- Étudier l'utilisation de données réelles pour améliorer la fiabilité des estimations.
+Dépôt GitHub : [iisoml/PFA-MAIN](https://github.com/iisoml/PFA-MAIN)
